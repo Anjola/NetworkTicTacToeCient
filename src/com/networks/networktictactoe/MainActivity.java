@@ -1,22 +1,14 @@
 package com.networks.networktictactoe;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.ref.WeakReference;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
-import android.os.AsyncTask;
+import java.lang.ref.WeakReference;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 public class MainActivity extends Activity {
 
@@ -149,7 +141,7 @@ public class MainActivity extends Activity {
 				mGame.setPosition(x,y,mGame.myPiece);
 				//make unclickable
 				buttons[x][y].setEnabled(false);
-				buttons[x][y].setText(mGame.myPiece);
+				buttons[x][y].setText((mGame.myPiece == 'X'?R.string.X:R.string.O));
 				
 				//opponent's turn 
 				myTurn = false;
@@ -205,7 +197,7 @@ public class MainActivity extends Activity {
 			mGame.setPosition(x,y,mGame.otherPiece);
 			//make unclickable
 			buttons[x][y].setEnabled(false);
-			buttons[x][y].setText(mGame.myPiece);
+			buttons[x][y].setText((mGame.otherPiece == 'X'?R.string.X:R.string.O));
 			
 			//my turn again
 			myTurn = true;
@@ -236,8 +228,8 @@ public class MainActivity extends Activity {
 		Log.i("MainActivity","game started");
 		if(myTurn)
 		{
-			for (int i=0 ; i <= 2; i++) {  
-				for (int j = 1; j <= 2; j++) {    
+			for (int i=0 ; i < 3; ++i) {  
+				for (int j = 0; j < 3; ++j) {    
 					buttons[i][j].setEnabled(true);  
 				}  
 			}  
@@ -247,6 +239,18 @@ public class MainActivity extends Activity {
 		{
 			textView.setText(R.string.opponentTurn);
 		}
+		
+		Button poll = (Button) findViewById(R.id.poll);
+		poll.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				mService.sendPoll();
+				
+			}
+			
+		}
+		);
 
 	}
 
@@ -258,8 +262,8 @@ public class MainActivity extends Activity {
 
 	private void enableButtons()
 	{
-		for (int i=0 ; i <= 2; i++) {  
-			for (int j = 1; j <= 2; j++) {
+		for (int i=0 ; i < 3; ++i) {  
+			for (int j = 0; j < 3; ++j)  {
 				//only enable unused buttons
 				if(mGame.isEmpty(i, j))
 					buttons[i][j].setEnabled(true);  
@@ -269,8 +273,8 @@ public class MainActivity extends Activity {
 
 
 	private void disableButtons(){
-		for (int i=0 ; i <= 2; i++) {  
-			for (int j = 1; j <= 2; j++) {    
+		for (int i=0 ; i < 3; ++i) {  
+			for (int j = 0; j < 3; ++j) {    
 				buttons[i][j].setEnabled(false);  
 			}  
 		}  
@@ -306,7 +310,7 @@ public class MainActivity extends Activity {
 		}
 
 		private void initGame(char c) {
-			// TODO Auto-generated method stub
+			// TODO Auto-generated method stu
 			buttons = new Button[4][4];
 
 			mGame = new Game(c);
@@ -328,8 +332,8 @@ public class MainActivity extends Activity {
 
 			textView.setText("Waiting for Opponent");  
 			// add the click listeners for each button  
-			for (int i=0 ; i <= 2; i++) {  
-				for (int j = 1; j <= 2; j++) {  
+			for (int i=0 ; i < 3; ++i) {  
+				for (int j = 0; j < 3; ++j) { 
 					buttons[i][j].setOnClickListener(new TicTacToeListener(i, j));  
 					buttons[i][j].setEnabled(false);  
 				}  
